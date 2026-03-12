@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/store"; 
 import { addToCart } from "@/services/cartService"; 
 import { setCart } from "../redux/slices/cartSlice"; 
+import Image from "next/image";
 
 export default function ProductCard({ product }: { product: any }) {
   const router = useRouter();
@@ -48,11 +49,12 @@ export default function ProductCard({ product }: { product: any }) {
     <div className="group flex flex-col cursor-pointer bg-white">
       {/* Product Image Section */}
       <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#f9f9f9]">
-        <img 
-          src={product.images?.[0]} 
-          alt={product.name} 
-          className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-1000"
-        />
+      <Image
+  src={product.images?.[0]}
+  alt={product.name}
+  fill
+  className="object-cover group-hover:scale-105 transition-transform duration-1000"
+/>
         
         {/* Overlay Buttons */}
         <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center gap-3">

@@ -104,13 +104,18 @@ export default function HomePage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-32">
             {categories.map((cat: any) => (
-              <Link href={`/products?category=${cat._id}`} key={cat._id} className="group relative h-[450px] overflow-hidden cursor-pointer block rounded-3xl">
+              <Link 
+              href={`/products?category=${cat._id}`} 
+              prefetch
+              key={cat._id}
+             className="group relative h-[450px] overflow-hidden cursor-pointer block rounded-3xl">
                 {cat.image ? (
-                  <img 
-                    src={cat.image} 
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" 
-                    alt={cat.name}
-                  />
+                <Image
+                src={cat.image}
+                alt={cat.name}
+                fill
+                className="object-cover group-hover:scale-110 transition-transform duration-1000"
+              />
                 ) : (
                   <div className="w-full h-full bg-zinc-100 flex items-center justify-center text-zinc-300">
                     <ImageIcon size={48} strokeWidth={1} />
