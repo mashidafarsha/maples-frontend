@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "@/components/Providers";
 import AuthInit from "@/components/AuthInit";
 import Header from "@/components/Header"; // 👈 ഹെഡർ ഇമ്പോർട്ട് ചെയ്യുക
+import { Toaster } from "react-hot-toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,6 +38,7 @@ export default function RootLayout({
             
             <main>
               {children}
+              <Toaster position="bottom-right" reverseOrder={false} />
             </main>
           </AuthInit>
         </Providers>

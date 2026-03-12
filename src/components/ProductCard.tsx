@@ -8,38 +8,39 @@ import { RootState } from "@/redux/store";
 import { addToCart } from "@/services/cartService"; 
 import { setCart } from "../redux/slices/cartSlice"; 
 import Image from "next/image";
+import toast from "react-hot-toast";
 
 export default function ProductCard({ product }: { product: any }) {
   const router = useRouter();
   const dispatch = useDispatch(); 
   
-  
   const { isAuthenticated } = useSelector((state: RootState) => state.auth);
-  
   const [loading, setLoading] = useState(false);
 
   const handleCartClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
 
-  
     if (!isAuthenticated) {
-      alert("Please login to add items to cart");
+      toast.error("Please login to add items to cart"); 
       router.push("/login");
       return;
     }
 
     setLoading(true);
+ 
+    const toastId = toast.loading("Adding to cart..."); 
+
     try {
       const data = await addToCart(product._id, 1);
       
       if (data.success) {
-      
         dispatch(setCart(data.cart.items)); 
-        
-        alert("Added to cart!");
+  
+        toast.success(`${product.name} added to cart!`, { id: toastId });
       }
     } catch (error: any) {
-      alert(error.response?.data?.message || "Failed to add to cart");
+      const message = error.response?.data?.message || "Failed to add to cart";
+      toast.error(message, { id: toastId }); // 4. Error Toast
     } finally {
       setLoading(false);
     }
