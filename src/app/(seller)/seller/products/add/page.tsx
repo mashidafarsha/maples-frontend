@@ -133,7 +133,7 @@ export default function SellerAddProduct() {
 
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase text-gray-400 ml-2">Price (₹)</label>
+              <label className="text-[10px] font-black uppercase text-gray-400 ml-2">Price (AED)</label>
               <input 
                 type="number" 
                 className="w-full p-5 bg-white rounded-2xl outline-none font-black text-xl border border-slate-100" 

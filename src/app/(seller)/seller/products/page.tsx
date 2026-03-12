@@ -49,7 +49,7 @@ const ProductCard = ({ p, onDelete }: { p: any; onDelete: (id: string) => void }
     </div>
     
     <div className="flex justify-between items-center pt-5 border-t border-gray-50">
-      <span className="font-black text-2xl">₹{p.price.toLocaleString()}</span>
+      <span className="font-black text-2xl">AED {p.price.toLocaleString()}</span>
       <div className="flex gap-1">
         <Link href={`/seller/products/edit/${p._id}`}>
           <button className="p-3 hover:bg-black hover:text-white rounded-xl transition-all"><Edit3 size={18} /></button>

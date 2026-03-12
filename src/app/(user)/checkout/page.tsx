@@ -143,7 +143,7 @@ export default function CheckoutPage() {
                       <h4 className="text-[11px] font-bold uppercase tracking-tight truncate">{item.product.name}</h4>
                       <p className="text-[9px] text-zinc-400 mt-0.5 italic font-serif">Qty: {item.quantity}</p>
                     </div>
-                    <p className="text-[11px] font-medium text-zinc-900">₹{(item.price * item.quantity).toLocaleString()}</p>
+                    <p className="text-[11px] font-medium text-zinc-900">AED {(item.price * item.quantity).toLocaleString()}</p>
                   </div>
                 ))}
               </div>
@@ -151,11 +151,11 @@ export default function CheckoutPage() {
               <div className="pt-6 border-t border-zinc-50 space-y-3">
                 <div className="flex justify-between items-center text-[10px] text-zinc-500 uppercase tracking-widest">
                   <span>Subtotal</span>
-                  <span>₹{calculatedTotal.toLocaleString()}</span>
+                  <span>AED {calculatedTotal.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between items-center pt-4">
                   <span className="text-[10px] font-black uppercase tracking-widest text-zinc-900">Total</span>
-                  <span className="text-2xl font-serif italic text-zinc-900">₹{calculatedTotal.toLocaleString()}</span>
+                  <span className="text-2xl font-serif italic text-zinc-900">AED {calculatedTotal.toLocaleString()}</span>
                 </div>
               </div>
 

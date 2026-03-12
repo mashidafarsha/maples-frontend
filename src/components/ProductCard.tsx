@@ -88,7 +88,7 @@ export default function ProductCard({ product }: { product: any }) {
         </h3>
         <div className="flex items-center justify-between pt-1">
           <p className="font-serif italic text-lg">
-            ₹{product.price.toLocaleString()}
+            AED {product.price.toLocaleString()}
           </p>
           <button className="text-[10px] font-black uppercase tracking-widest border-b border-black pb-0.5 hover:text-gray-500 transition-colors">
             Request Quote

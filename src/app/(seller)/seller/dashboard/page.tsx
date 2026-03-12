@@ -48,7 +48,7 @@ export default function SellerDashboard() {
   const cards = [
     {
       title: "Total Revenue",
-      value: `₹${stats?.totalRevenue?.toLocaleString() || "0"}`,
+      value: `AED${stats?.totalRevenue?.toLocaleString() || "0"}`,
       icon: DollarSign,
       color: "text-emerald-600",
       bg: "bg-emerald-50",
@@ -136,7 +136,7 @@ export default function SellerDashboard() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-black text-lg">₹{order.totalPrice}</p>
+                      <p className="font-black text-lg">AED {order.totalPrice}</p>
                       <span className="text-[9px] font-black uppercase text-white bg-black px-3 py-1 rounded-full">{order.status}</span>
                     </div>
                   </div>

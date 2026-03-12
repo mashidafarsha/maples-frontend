@@ -6,7 +6,7 @@ import { DollarSign, Users, ShoppingCart, TrendingUp } from "lucide-react";
 
 export default function AdminDashboard() {
   const stats = [
-    { title: "Total Revenue", value: "₹4,25,000", icon: DollarSign, color: "text-emerald-600" },
+    { title: "Total Revenue", value: "AED 4,25,000", icon: DollarSign, color: "text-emerald-600" },
     { title: "Active Vendors", value: "24", icon: Users, color: "text-blue-600" },
     { title: "Total Orders", value: "156", icon: ShoppingCart, color: "text-orange-600" },
     { title: "Growth Rate", value: "+12.5%", icon: TrendingUp, color: "text-purple-600" },

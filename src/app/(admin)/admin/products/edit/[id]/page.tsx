@@ -197,7 +197,7 @@ export default function EditProductPage() {
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 ml-2">Price (INR)</label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-slate-400">₹</span>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-slate-400">AED</span>
                   <input
                     type="number"
                     value={formData.price}

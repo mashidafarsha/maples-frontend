@@ -115,7 +115,7 @@ export default function MyOrdersPage() {
                 {/* Price & Action Section */}
                 <div className="flex flex-row md:flex-col justify-between items-end md:text-right border-t md:border-t-0 pt-6 md:pt-0 border-zinc-50">
                   <div>
-                    <p className="text-2xl font-serif italic text-zinc-900">₹{order.totalPrice?.toLocaleString() || "0"}</p>
+                    <p className="text-2xl font-serif italic text-zinc-900">AED {order.totalPrice?.toLocaleString() || "0"}</p>
                     <p className="text-[9px] font-bold text-zinc-400 uppercase tracking-tighter">Grand Total</p>
                   </div>
 

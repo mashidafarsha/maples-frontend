@@ -146,7 +146,7 @@ export default function CartPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                     <p className="text-2xl font-serif italic text-zinc-900">₹{(item.price * item.quantity).toLocaleString()}</p>
+                     <p className="text-2xl font-serif italic text-zinc-900">AED{(item.price * item.quantity).toLocaleString()}</p>
                   </div>
                 </div>
               </div>
@@ -162,7 +162,7 @@ export default function CartPage() {
             <div className="space-y-5">
               <div className="flex justify-between items-center">
                 <span className="text-zinc-500 font-medium">Subtotal</span>
-                <span className="font-bold text-lg">₹{cart.totalPrice.toLocaleString()}</span>
+                <span className="font-bold text-lg">AED {cart.totalPrice.toLocaleString()}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-zinc-500 font-medium">Delivery</span>
@@ -172,7 +172,7 @@ export default function CartPage() {
               <div className="pt-10 border-t border-zinc-200 flex justify-between items-center">
                 <span className="text-sm font-black uppercase tracking-widest">Total</span>
                 <div className="text-right">
-                  <span className="text-4xl font-serif italic block">₹{cart.totalPrice.toLocaleString()}</span>
+                  <span className="text-4xl font-serif italic block">AED {cart.totalPrice.toLocaleString()}</span>
                   <p className="text-[9px] text-zinc-400 font-bold uppercase mt-1">VAT Included</p>
                 </div>
               </div>

@@ -153,7 +153,7 @@ export default function SellerEditProduct() {
 
             <div className="grid grid-cols-2 gap-6">
               <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Price (₹)</label>
+                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 ml-2">Price (AED)</label>
                 <input
                   type="number"
                   value={formData.price}
