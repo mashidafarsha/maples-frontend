@@ -6,7 +6,7 @@ import Image from "next/image";
 import api from "@/utils/api";
 import { 
   Plus, Search, Trash2, Edit3, 
-  ChevronLeft, ChevronRight, Filter 
+  ChevronLeft, ChevronRight, Filter, Loader2 
 } from "lucide-react";
 import toast from "react-hot-toast";
 import Link from "next/link";
@@ -23,7 +23,7 @@ export default function AdminProducts() {
   const [selectedCategory, setSelectedCategory] = useState(""); 
   const [page, setPage] = useState(1);
 
-  // Search Debouncing
+  // 🚀 1. Search Debouncing: 400ms കാത്തുനിൽക്കുന്നത് വഴി അനാവശ്യ API കോളുകൾ ഒഴിവാക്കി വേഗത കൂട്ടുന്നു.
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchTerm);
@@ -32,13 +32,15 @@ export default function AdminProducts() {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-
-  const { data, isLoading, mutate } = useSWR(
+  // 🚀 2. keepPreviousData: true നൽകുന്നതിലൂടെ പുതിയ ഡാറ്റ വരുന്നത് വരെ പഴയ ഡാറ്റ സ്ക്രീനിൽ ഉണ്ടാകും (No Blank Screen).
+  const { data, isLoading, isValidating, mutate } = useSWR(
     `/products?page=${page}&limit=10&search=${debouncedSearch}&category=${selectedCategory}`,
     fetcher,
-    { keepPreviousData: true }
+    { 
+      keepPreviousData: true,
+      revalidateOnFocus: false 
+    }
   );
-
 
   const { data: catData } = useSWR("/categories", () => getCategories(1, "", 100));
   const categories = catData?.categories || [];
@@ -46,9 +48,7 @@ export default function AdminProducts() {
   const products = data?.products || [];
   const totalPages = data?.totalPages || 1;
 
-  
   const handleDelete = async (id: string) => {
- 
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -58,8 +58,6 @@ export default function AdminProducts() {
       cancelButtonColor: "#3085d6",
       confirmButtonText: "Yes, delete it!",
       cancelButtonText: "Cancel",
-      background: "#fff",
-      // borderRadius: "15px",
       customClass: {
         popup: 'rounded-2xl shadow-xl',
         title: 'text-xl font-bold text-slate-800',
@@ -71,8 +69,6 @@ export default function AdminProducts() {
         try {
           await deleteProduct(id);
           mutate(); 
-          
-        
           Swal.fire({
             title: "Deleted!",
             text: "Your product has been deleted.",
@@ -102,19 +98,23 @@ export default function AdminProducts() {
         </Link>
       </div>
 
-      {/* --- Filter & Search Bar --- */}
+      {/* Filter & Search Bar */}
       <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-6 flex flex-col md:flex-row gap-4 items-center">
         <div className="relative flex-1 w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+          {isValidating ? (
+            <Loader2 className="absolute left-3 top-1/2 -translate-y-1/2 text-[#004aad] animate-spin" size={18} />
+          ) : (
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+          )}
           <input
             type="text"
+            value={searchTerm}
             placeholder="Search by name, brand or seller..."
             className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:border-[#004aad] transition-all text-sm"
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
 
-    
         <div className="flex items-center gap-2 w-full md:w-auto">
           <Filter size={16} className="text-slate-400" />
           <select 
@@ -127,16 +127,14 @@ export default function AdminProducts() {
           >
             <option value="">All Categories</option>
             {categories.map((cat: any) => (
-              <option key={cat._id} value={cat._id}>
-                {cat.name}
-              </option>
+              <option key={cat._id} value={cat._id}>{cat.name}</option>
             ))}
           </select>
         </div>
       </div>
 
       {/* Table Container */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden relative">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 text-[13px] uppercase tracking-wider font-semibold">
@@ -147,14 +145,10 @@ export default function AdminProducts() {
               <th className="px-6 py-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
-            {isLoading ? (
-               [...Array(5)].map((_, i) => (
-                <tr key={i} className="animate-pulse">
-                  <td colSpan={5} className="px-6 py-4 h-16 bg-slate-50/50"></td>
-                </tr>
-              ))
-            ) : products.length > 0 ? (
+          
+          {/* 🚀 3. Transition & Opacity Logic: സെർച്ച് നടക്കുമ്പോൾ ടേബിൾ മങ്ങുക മാത്രം ചെയ്യും */}
+          <tbody className={`divide-y divide-slate-100 transition-opacity duration-300 ${isValidating ? 'opacity-50' : 'opacity-100'}`}>
+            {products.length > 0 ? (
               products.map((product: any) => (
                 <tr key={product._id} className="hover:bg-slate-50 transition-colors">
                   <td className="px-6 py-4">
@@ -200,10 +194,17 @@ export default function AdminProducts() {
                   </td>
                 </tr>
               ))
+            ) : isLoading ? (
+                // 🚀 4. Initial Skeleton: ആദ്യം ലോഡ് ചെയ്യുമ്പോൾ മാത്രം സ്കെലിറ്റൺ വരും
+                [...Array(5)].map((_, i) => (
+                <tr key={i} className="animate-pulse">
+                  <td colSpan={5} className="px-6 py-8 bg-slate-50/30"></td>
+                </tr>
+              ))
             ) : (
               <tr>
                 <td colSpan={5} className="px-6 py-10 text-center text-slate-400 text-sm italic">
-                  No products found...
+                  No products found for "{searchTerm}"
                 </td>
               </tr>
             )}
