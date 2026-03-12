@@ -59,7 +59,7 @@ export default function AdminProducts() {
       confirmButtonText: "Yes, delete it!",
       cancelButtonText: "Cancel",
       background: "#fff",
-      borderRadius: "15px",
+      // borderRadius: "15px",
       customClass: {
         popup: 'rounded-2xl shadow-xl',
         title: 'text-xl font-bold text-slate-800',

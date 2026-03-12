@@ -117,7 +117,7 @@ export default function CategoryPage() {
       confirmButtonColor: '#000000', 
       cancelButtonColor: '#f87171',
       confirmButtonText: 'Yes, delete it!',
-      borderRadius: '20px',
+      // borderRadius: '20px',
       customClass: {
         popup: 'rounded-[2rem] font-sans',
         confirmButton: 'rounded-xl px-6 py-3',
@@ -140,7 +140,7 @@ export default function CategoryPage() {
           icon: 'success',
           timer: 1500,
           showConfirmButton: false,
-          borderRadius: '20px',
+          // borderRadius: '20px',
         });
       } catch (err) {
         mutate();

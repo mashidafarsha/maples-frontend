@@ -51,7 +51,7 @@ export default function VendorManagement() {
       showCancelButton: true,
       confirmButtonColor: currentStatus ? '#ef4444' : '#000000',
       confirmButtonText: `Yes, ${actionText}`,
-      borderRadius: '24px',
+      // borderRadius: '24px',
       customClass: { popup: 'rounded-[2rem] font-sans' }
     });
 
@@ -73,7 +73,7 @@ export default function VendorManagement() {
         icon: 'success',
         timer: 1500,
         showConfirmButton: false,
-        borderRadius: '20px'
+        // borderRadius: '20px'
       });
     } catch (error) {
       mutate(); 
