@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { deleteCookie } from 'cookies-next';
 
 interface AuthState {
   user: any | null;
@@ -25,6 +26,15 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
+    
+      
+      deleteCookie("token");
+      deleteCookie("refreshToken");
+      deleteCookie("user");
+      deleteCookie("role"); 
+    
+    
+      window.location.href = "/login";
     },
   },
 });

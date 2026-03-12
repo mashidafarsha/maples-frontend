@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-// 👇 Providers import cheyyuka
 import { Providers } from "@/components/Providers";
+import AuthInit from "@/components/AuthInit";
+import Header from "@/components/Header"; // 👈 ഹെഡർ ഇമ്പോർട്ട് ചെയ്യുക
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Multi-Vendor E-commerce",
-  description: "High-speed automated marketplace",
+  title: "Maples | Luxury Hotel Supplies",
+  description: "High-speed premium hospitality solutions",
 };
 
 export default function RootLayout({
@@ -29,9 +30,15 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/* 👇 Children-ne Providers kondu wrap cheyyuka */}
         <Providers>
-          {children}
+          <AuthInit>
+           
+            <Header /> 
+            
+            <main>
+              {children}
+            </main>
+          </AuthInit>
         </Providers>
       </body>
     </html>
