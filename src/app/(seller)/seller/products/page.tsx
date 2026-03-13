@@ -75,7 +75,7 @@ export default function SellerProducts() {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchTerm);
       setPage(1);
-    }, 400);
+    }, 300);
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
