@@ -36,7 +36,7 @@ export default function CategoryPage() {
     () => debounce((value: string) => {
       setSearchTerm(value);
       setPage(1);
-    }, 500),
+    }, 300),
     []
   );
 

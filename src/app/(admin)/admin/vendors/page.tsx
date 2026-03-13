@@ -26,7 +26,7 @@ const fetcher = (url: string) => api.get(url).then(res => res.data);
 export default function VendorManagement() {
   const [page, setPage] = useState(1);
   const [searchInput, setSearchInput] = useState("");
-  const debouncedSearch = useDebounce(searchInput, 500); 
+  const debouncedSearch = useDebounce(searchInput, 300); 
   const limit = 10;
 
 

@@ -1,8 +1,8 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { getCookie } from "cookies-next";
-import { Loader2, Download, CheckCircle, Search, Plus, Minus, Trash2, ShoppingBag } from "lucide-react";
+import { Loader2, Download, CheckCircle, Search, Plus, Minus, Trash2 } from "lucide-react";
 import { searchProducts } from "@/services/productService";
 import { requestQuotation, downloadPDF } from "@/services/quotationService";
 
@@ -25,22 +25,27 @@ export default function QuotationForm() {
     setIsLoggedIn(!!token);
   }, []);
 
+  // 🚀 സെർച്ച് കൂടുതൽ വേഗത്തിലാക്കാൻ കുറഞ്ഞ Debounce Time
   useEffect(() => {
+    if (searchQuery.trim().length < 2) {
+      setSuggestions([]);
+      setIsSearching(false);
+      return;
+    }
+
     const timer = setTimeout(async () => {
-      if (searchQuery.trim().length > 2) {
-        setIsSearching(true);
-        try {
-          const data = await searchProducts(searchQuery, 5);
-          setSuggestions(data.products || []);
-        } catch (err) {
-          setSuggestions([]);
-        } finally {
-          setIsSearching(false);
-        }
-      } else {
+      setIsSearching(true);
+      try {
+        // limit 5 എന്നത് സജഷൻസിന് അനുയോജ്യമാണ്
+        const data = await searchProducts(searchQuery, 5);
+        setSuggestions(data.products || []);
+      } catch (err) {
         setSuggestions([]);
+      } finally {
+        setIsSearching(false);
       }
-    }, 300);
+    }, 200); // 300ms ൽ നിന്ന് 200ms ആക്കി കുറച്ചു
+
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
@@ -98,80 +103,98 @@ export default function QuotationForm() {
       </header>
 
       <div className="grid lg:grid-cols-2 gap-12">
-        
-        {/* Step 1: Search & Selection */}
         <section className="space-y-8">
           <div>
             <label className="text-xs font-bold uppercase tracking-widest text-zinc-900 block mb-4">01. Select Products</label>
             <div className="relative">
-              <input 
-                type="text" 
-                value={searchQuery}
-                placeholder="Search products..."
-                className="w-full border border-zinc-200 p-4 rounded-xl outline-none focus:border-black transition-all"
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              {isSearching && <Loader2 size={18} className="animate-spin absolute right-4 top-4 text-zinc-400" />}
+              <div className="relative group">
+                <input 
+                  type="text" 
+                  value={searchQuery}
+                  placeholder="Search products..."
+                  className="w-full border border-zinc-200 p-4 pl-12 rounded-xl outline-none focus:border-black transition-all shadow-sm"
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400" size={18} />
+                {isSearching && (
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                    <Loader2 size={18} className="animate-spin text-zinc-400" />
+                  </div>
+                )}
+              </div>
               
+              {/* Suggestions Dropdown - Improved Design */}
               {suggestions.length > 0 && (
-                <div className="absolute z-10 w-full bg-white border border-zinc-200 shadow-xl rounded-xl mt-2 overflow-hidden">
+                <div className="absolute z-20 w-full bg-white border border-zinc-200 shadow-2xl rounded-xl mt-2 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
                   {suggestions.map((p: any) => (
-                    <div key={p._id} onClick={() => addItem(p)} className="p-4 hover:bg-zinc-50 cursor-pointer flex justify-between items-center border-b border-zinc-50 last:border-0 transition-colors">
-                      <span className="font-medium text-sm text-zinc-900">{p.name}</span>
-                      <Plus size={16} className="text-zinc-400" />
-                    </div>
+                    <button 
+                      key={p._id} 
+                      onClick={() => addItem(p)} 
+                      className="w-full text-left p-4 hover:bg-zinc-50 flex justify-between items-center border-b border-zinc-50 last:border-0 transition-colors group"
+                    >
+                      <div>
+                        <p className="font-semibold text-sm text-zinc-900">{p.name}</p>
+                        <p className="text-[10px] text-zinc-400 uppercase tracking-tighter">{p.brand}</p>
+                      </div>
+                      <Plus size={16} className="text-zinc-300 group-hover:text-black transition-colors" />
+                    </button>
                   ))}
                 </div>
               )}
             </div>
           </div>
 
+          {/* Selected Items List */}
           <div className="space-y-4">
             {selectedItems.map(item => (
-              <div key={item._id} className="flex justify-between items-center bg-zinc-50 p-4 rounded-xl border border-zinc-100">
-                <div>
+              <div key={item._id} className="flex justify-between items-center bg-zinc-50 p-4 rounded-xl border border-zinc-100 animate-in zoom-in-95 duration-200">
+                <div className="flex-1">
                   <p className="font-bold text-sm text-zinc-900">{item.name}</p>
                   <p className="text-xs text-zinc-500">AED {item.price}</p>
                 </div>
                 <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2 bg-white border border-zinc-200 rounded-lg px-2 py-1">
-                    <button onClick={() => setSelectedItems(prev => prev.map(i => i._id === item._id ? {...i, quantity: Math.max(1, i.quantity - 1)} : i))}><Minus size={14}/></button>
-                    <span className="text-xs font-bold w-4 text-center">{item.quantity}</span>
-                    <button onClick={() => setSelectedItems(prev => prev.map(i => i._id === item._id ? {...i, quantity: i.quantity + 1} : i))}><Plus size={14}/></button>
+                  <div className="flex items-center gap-2 bg-white border border-zinc-200 rounded-lg px-2 py-1 shadow-sm">
+                    <button className="hover:text-red-500 transition-colors" onClick={() => setSelectedItems(prev => prev.map(i => i._id === item._id ? {...i, quantity: Math.max(1, i.quantity - 1)} : i))}><Minus size={14}/></button>
+                    <span className="text-xs font-bold w-6 text-center">{item.quantity}</span>
+                    <button className="hover:text-green-600 transition-colors" onClick={() => setSelectedItems(prev => prev.map(i => i._id === item._id ? {...i, quantity: i.quantity + 1} : i))}><Plus size={14}/></button>
                   </div>
-                  <button onClick={() => setSelectedItems(prev => prev.filter(i => i._id !== item._id))} className="text-zinc-300 hover:text-red-500"><Trash2 size={16}/></button>
+                  <button onClick={() => setSelectedItems(prev => prev.filter(i => i._id !== item._id))} className="text-zinc-300 hover:text-red-500 transition-colors"><Trash2 size={16}/></button>
                 </div>
               </div>
             ))}
-            {selectedItems.length === 0 && <p className="text-zinc-300 text-sm italic py-10 text-center border-2 border-dashed border-zinc-100 rounded-xl">No items selected.</p>}
+            {selectedItems.length === 0 && (
+              <div className="text-center py-12 border-2 border-dashed border-zinc-100 rounded-2xl">
+                <p className="text-zinc-300 text-sm italic">No items selected yet.</p>
+              </div>
+            )}
           </div>
         </section>
 
-        {/* Step 2: Form */}
-        <section className="bg-white border border-zinc-200 p-8 rounded-2xl shadow-sm">
+        {/* Recipient Details Form */}
+        <section className="bg-white border border-zinc-200 p-8 rounded-2xl shadow-sm h-fit">
           <label className="text-xs font-bold uppercase tracking-widest text-zinc-900 block mb-8">02. Recipient Details</label>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase text-zinc-500">Full Name</label>
-              <input required className="w-full border border-zinc-200 p-3 rounded-lg outline-none focus:border-black text-sm text-zinc-900" onChange={e => setFormData({...formData, name: e.target.value})} />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase text-zinc-500">Email Address</label>
-              <input required type="email" className="w-full border border-zinc-200 p-3 rounded-lg outline-none focus:border-black text-sm text-zinc-900" onChange={e => setFormData({...formData, email: e.target.value})} />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase text-zinc-500">Phone</label>
-              <input required className="w-full border border-zinc-200 p-3 rounded-lg outline-none focus:border-black text-sm text-zinc-900" onChange={e => setFormData({...formData, phone: e.target.value})} />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase text-zinc-500">Hotel/Company</label>
-              <input className="w-full border border-zinc-200 p-3 rounded-lg outline-none focus:border-black text-sm text-zinc-900" onChange={e => setFormData({...formData, hotelName: e.target.value})} />
-            </div>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {[
+              { label: "Full Name", key: "name", type: "text" },
+              { label: "Email Address", key: "email", type: "email" },
+              { label: "Phone", key: "phone", type: "text" },
+              { label: "Hotel/Company", key: "hotelName", type: "text" }
+            ].map((field) => (
+              <div key={field.key} className="space-y-1">
+                <label className="text-[10px] font-bold uppercase text-zinc-400">{field.label}</label>
+                <input 
+                  required={field.key !== 'hotelName'} 
+                  type={field.type}
+                  className="w-full border border-zinc-200 p-3 rounded-lg outline-none focus:border-black transition-all text-sm text-zinc-900 bg-zinc-50 focus:bg-white" 
+                  onChange={e => setFormData({...formData, [field.key]: e.target.value})} 
+                />
+              </div>
+            ))}
             <button 
               disabled={loading || selectedItems.length === 0}
-              className="w-full bg-black text-white py-4 rounded-xl font-bold text-sm mt-4 hover:bg-zinc-800 transition-all disabled:bg-zinc-200"
+              className="w-full bg-black text-white py-4 rounded-xl font-bold text-sm mt-6 hover:bg-zinc-800 transition-all shadow-lg disabled:bg-zinc-100 disabled:text-zinc-400 disabled:shadow-none"
             >
-              {loading ? "Processing..." : "Generate Quote"}
+              {loading ? <span className="flex items-center justify-center gap-2"><Loader2 className="animate-spin" size={18}/> Processing</span> : "Generate Quote"}
             </button>
           </form>
         </section>
